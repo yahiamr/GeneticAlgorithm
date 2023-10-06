@@ -1,0 +1,1 @@
+add_library(GA_LIB ${CMAKE_HOME_DIRECTORY}/ConcreteGA/GA.cpp)
