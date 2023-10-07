@@ -14,10 +14,10 @@ GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm
             population.push_back(randomGenome());
         
             for (auto elem : population[i]) {
-            cout << elem;
+          //  cout << elem;
     }
  
-    cout << endl;
+   // cout << endl;
     }
         
 }
@@ -27,6 +27,16 @@ void
 GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration
 ()
 {
+    for (size_t l = 0; l < population.size(); l++)
+    {
+    for (size_t i = 0; i < GenomeLength; i++)
+    {
+        cout<<population[l][i];
+    }
+    cout<<endl;
+    cout<<l<<endl;
+    }
+    //evaluateFitness();
     evaluate();
     select();
     crossover();
@@ -75,7 +85,7 @@ GeneticAlgorithm<GenomeType, FitnessType>::randomGenome(){
 std::vector<GenomeType> gnome(GenomeLength);
             for (size_t i = 0; i < gnome.size(); i++)
             {
-               gnome[i] = static_cast<GenomeType>('a' + rand()%26);
+               gnome[i] = static_cast<GenomeType>(32 + ( std::rand() % ( 126 - 32 + 1 ) ));
             //    cout<<(static_cast<GenomeType>) rand()<<endl;
             }
 return gnome;            
