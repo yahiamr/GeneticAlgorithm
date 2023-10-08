@@ -29,12 +29,10 @@ GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration
 {
     for (size_t l = 0; l < population.size(); l++)
     {
-    for (size_t i = 0; i < GenomeLength; i++)
-    {
-        cout<<population[l][i];
-    }
-    cout<<endl;
-    cout<<l<<endl;
+  
+        evaluateFitness(population[l]);
+        //cout<<population[l][i];
+   
     }
     //evaluateFitness();
     evaluate();
@@ -44,13 +42,20 @@ GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration
 }
 
 template<typename GenomeType, typename FitnessType>
+void 
+GeneticAlgorithm<GenomeType, FitnessType>::SetFitFunc(std::function<FitnessType(const std::vector<GenomeType>&)> fitnessFunc) {
+    evaluateFitness = fitnessFunc;
+}
+
+
+template<typename GenomeType, typename FitnessType>
 void
 GeneticAlgorithm<GenomeType, FitnessType>::evaluate
 ()
 {
 for (auto& genome :population)
 {
-
+evaluateFitness(genome);
 }
 
 }

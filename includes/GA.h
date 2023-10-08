@@ -14,7 +14,7 @@ class GeneticAlgorithm {
         void SetGenomeLength(int length);
         void SetPopulationSize(int popsize);
         void RunGeneration();
-        void SetFitFunc(std::function<FitnessType(const GenomeType&)> fitnessFunc);
+        void SetFitFunc(std::function<FitnessType(const std::vector<GenomeType>&)> fitnessFunc);
     private:
         void evaluate();
         void select();
@@ -24,6 +24,6 @@ class GeneticAlgorithm {
         int populationSize;
         int GenomeLength;
         std::vector<std::vector<GenomeType>> population;
-        std::function<FitnessType(const GenomeType&)> evaluateFitness;
+        std::function<FitnessType(const std::vector<GenomeType>&)> evaluateFitness;
 
 };
