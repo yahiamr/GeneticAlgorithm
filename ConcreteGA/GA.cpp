@@ -1,100 +1,83 @@
 #include <GA.h>
 
-
-
-template<typename GenomeType, typename FitnessType>
+template <typename GenomeType, typename FitnessType>
 
 GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm
 
-(int popSize, int genomelength)
+    (int popSize, int genomelength)
 
-:populationSize(popSize), GenomeLength(genomelength)
+    : populationSize(popSize), GenomeLength(genomelength)
 {
-    for (int i = 0; i < popSize; ++i) {
-            population.push_back(randomGenome());
-        
-            for (auto elem : population[i]) {
-          //  cout << elem;
+    for (int i = 0; i < popSize; ++i)
+    {
+        population.push_back(randomGenome());
     }
- 
-   // cout << endl;
-    }
-        
+    population_score.reserve(populationSize);
 }
 
-template<typename GenomeType, typename FitnessType>
-void
-GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration
 ()
 {
-    for (size_t l = 0; l < population.size(); l++)
-    {
-  
-        evaluateFitness(population[l]);
-        //cout<<population[l][i];
-   
-    }
-    //evaluateFitness();
     evaluate();
     select();
     crossover();
     mutate();
 }
 
-template<typename GenomeType, typename FitnessType>
-void 
-GeneticAlgorithm<GenomeType, FitnessType>::SetFitFunc(std::function<FitnessType(const std::vector<GenomeType>&)> fitnessFunc) {
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::SetFitFunc
+(std::function<FitnessType(const std::vector<GenomeType> &)> fitnessFunc)
+{
     evaluateFitness = fitnessFunc;
 }
 
-
-template<typename GenomeType, typename FitnessType>
-void
-GeneticAlgorithm<GenomeType, FitnessType>::evaluate
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::evaluate
 ()
 {
-for (auto& genome :population)
-{
-evaluateFitness(genome);
+    for (int i = 0; i < populationSize; ++i)
+    {
+       population_score[i] =evaluateFitness(population[i]);
+    }
 }
 
-}
-
-template<typename GenomeType, typename FitnessType>
-void
-GeneticAlgorithm<GenomeType, FitnessType>::select
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::select
 ()
 {
-
 }
 
-template<typename GenomeType, typename FitnessType>
-void
-GeneticAlgorithm<GenomeType, FitnessType>::crossover
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::crossover
 ()
 {
-
 }
 
-template<typename GenomeType, typename FitnessType>
-void
-GeneticAlgorithm<GenomeType, FitnessType>::mutate
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::mutate
 ()
 {
-
 }
 
-template<typename GenomeType, typename FitnessType>
+template <typename GenomeType, typename FitnessType>
 std::vector<GenomeType>
-GeneticAlgorithm<GenomeType, FitnessType>::randomGenome(){
-std::vector<GenomeType> gnome(GenomeLength);
-            for (size_t i = 0; i < gnome.size(); i++)
-            {
-               gnome[i] = static_cast<GenomeType>(32 + ( std::rand() % ( 126 - 32 + 1 ) ));
-            //    cout<<(static_cast<GenomeType>) rand()<<endl;
-            }
-return gnome;            
+GeneticAlgorithm<GenomeType, FitnessType>::randomGenome
+()
+{
+    std::vector<GenomeType> gnome(GenomeLength);
+    // Create a Mersenne Twister random number generator
+    std::mt19937 rng(std::random_device{}());
 
+    // Create a uniform distribution
+    std::uniform_int_distribution<int> dist(32, 126);
+
+    for (size_t i = 0; i < gnome.size(); i++)
+    {
+        gnome[i] = static_cast<GenomeType>(dist(rng));
+        //    cout<<(static_cast<GenomeType>) rand()<<endl;
+    }
+    return gnome;
 }
 
 template class GeneticAlgorithm<char, double>;

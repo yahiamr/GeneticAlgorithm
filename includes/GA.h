@@ -16,11 +16,14 @@ class GeneticAlgorithm {
         void RunGeneration();
         void SetFitFunc(std::function<FitnessType(const std::vector<GenomeType>&)> fitnessFunc);
     private:
+        //methods
         void evaluate();
         void select();
         void crossover();
         void mutate();
         std::vector<GenomeType> randomGenome();
+        // variables
+        std::vector<GenomeType> population_score;
         int populationSize;
         int GenomeLength;
         std::vector<std::vector<GenomeType>> population;
