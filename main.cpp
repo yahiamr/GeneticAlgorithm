@@ -10,7 +10,7 @@ int main()
     auto fitnessFunction = [](const std::vector<Genome> &genome) -> Fitness
     {
         std::string target = "Hello world yaya";
-        int score = 0;
+        Fitness score = 0;
         for (size_t i = 0; i < genome.size(); i++)
         {
             score += (target[i] == genome[i]);

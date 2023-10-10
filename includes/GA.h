@@ -19,11 +19,13 @@ class GeneticAlgorithm {
         //methods
         void evaluate();
         void select();
-        void crossover();
+        void crossover(vector<GenomeType> parent1, vector<GenomeType> parent2);
         void mutate();
+        // HELPER FUNCTIONS
         std::vector<GenomeType> randomGenome();
+        void SortPopulationMap(std::vector<std::pair<int,FitnessType>> score_map);
         // variables
-        std::vector<GenomeType> population_score;
+        std::vector<std::pair<int,FitnessType>> population_score;
         int populationSize;
         int GenomeLength;
         std::vector<std::vector<GenomeType>> population;

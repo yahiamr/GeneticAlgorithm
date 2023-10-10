@@ -16,54 +16,80 @@ GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm
 }
 
 template <typename GenomeType, typename FitnessType>
-void GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration
-()
+void GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration()
 {
     evaluate();
     select();
-    crossover();
+    // crossover();
     mutate();
 }
 
 template <typename GenomeType, typename FitnessType>
-void GeneticAlgorithm<GenomeType, FitnessType>::SetFitFunc
-(std::function<FitnessType(const std::vector<GenomeType> &)> fitnessFunc)
+void GeneticAlgorithm<GenomeType, FitnessType>::evaluate()
 {
-    evaluateFitness = fitnessFunc;
-}
-
-template <typename GenomeType, typename FitnessType>
-void GeneticAlgorithm<GenomeType, FitnessType>::evaluate
-()
-{
+    FitnessType score = 0;
     for (int i = 0; i < populationSize; ++i)
     {
-       population_score[i] =evaluateFitness(population[i]);
+        score = evaluateFitness(population[i]);
+        population_score.push_back(std::make_pair(i, score));
     }
+    SortPopulationMap(population_score);
 }
 
 template <typename GenomeType, typename FitnessType>
-void GeneticAlgorithm<GenomeType, FitnessType>::select
-()
+void GeneticAlgorithm<GenomeType, FitnessType>::select()
+{
+    // we will select the first 50% of the population
+    int elite = populationSize / 2;
+    if (elite % 2 == 0)
+    {
+        // elite is divisible by 2
+        // nth to do
+    }
+    else
+    {
+        elite++;
+    }
+    // create elite indexes vector
+    int count = 0;
+    std::vector<int> elite_indexes ;
+    // for (size_t i = 0; i < elite; i++)
+    // {
+    //    // elite_indexes[i]= population_score[i].second;
+    //    // cout<< elite_indexes[i]<<endl;
+    // }
+    // std::vector<std::pair<int, FitnessType>>::iterator it;
+      for ( auto it = population_score.begin(); it != population_score.end() && count < elite; ++it, ++count) {
+        std::cout << it->first << " -> " << it->second << std::endl;
+        // TODO: send pairs to crossover 
+    }
+    
+
+    // for (size_t i = 0; i < elite/2; i++)
+    // {
+    //     crossover(population[i],population[elite-i]);
+    // }
+    
+}
+
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::crossover(vector<GenomeType> parent1, vector<GenomeType> parent2)
 {
 }
 
 template <typename GenomeType, typename FitnessType>
-void GeneticAlgorithm<GenomeType, FitnessType>::crossover
-()
+void GeneticAlgorithm<GenomeType, FitnessType>::mutate()
 {
 }
 
-template <typename GenomeType, typename FitnessType>
-void GeneticAlgorithm<GenomeType, FitnessType>::mutate
-()
-{
-}
+// HELPER functions
+
+// RANDOMGENOME
+//  Create Random genome to fill the first population
 
 template <typename GenomeType, typename FitnessType>
 std::vector<GenomeType>
-GeneticAlgorithm<GenomeType, FitnessType>::randomGenome
-()
+GeneticAlgorithm<GenomeType, FitnessType>::randomGenome()
 {
     std::vector<GenomeType> gnome(GenomeLength);
     // Create a Mersenne Twister random number generator
@@ -80,4 +106,31 @@ GeneticAlgorithm<GenomeType, FitnessType>::randomGenome
     return gnome;
 }
 
+// SetFitFunc
+//  member function to set the fitness function by passing a defined lamda equation that will test the fit result of each single genome
+
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::SetFitFunc(std::function<FitnessType(const std::vector<GenomeType> &)> fitnessFunc)
+{
+    evaluateFitness = fitnessFunc;
+}
+
+// SortPopulationMap
+// to sort the passed score map of the population while keeping the indixes as the original population
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::SortPopulationMap(std::vector<std::pair<int, FitnessType>> score_map)
+{
+    std::sort(population_score.begin(), population_score.end(),
+              [](const std::pair<int, int> &a, const std::pair<int, int> &b)
+              {
+                  return a.second > b.second;
+              });
+
+    for (const auto &p : population_score)
+    {
+        std::cout << "Genome index: " << p.first << ", Score: " << p.second << std::endl;
+    }
+}
+
 template class GeneticAlgorithm<char, double>;
+template class GeneticAlgorithm<char, int>;
