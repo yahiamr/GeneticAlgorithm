@@ -19,7 +19,7 @@ int main()
         return score;
     };
 
-    GeneticAlgorithm<Genome, Fitness> ga(10, 16);
+    GeneticAlgorithm<Genome, Fitness> ga(9, 16);
     ga.SetFitFunc(fitnessFunction);
    
     ga.RunGeneration();

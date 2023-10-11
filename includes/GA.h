@@ -29,6 +29,8 @@ class GeneticAlgorithm {
         int populationSize;
         int GenomeLength;
         std::vector<std::vector<GenomeType>> population;
+        std::vector<std::vector<GenomeType>> next_population;
+        int child_count = 0;
         std::function<FitnessType(const std::vector<GenomeType>&)> evaluateFitness;
 
 };

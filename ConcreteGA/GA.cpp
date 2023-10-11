@@ -18,9 +18,20 @@ GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration()
 {
+    child_count = 0;
+    next_population.reserve(populationSize);
     evaluate();
     select();
     // crossover();
+    // for (size_t i = 0; i < populationSize; i++)
+    // {
+    //     for (size_t l = 0; l < GenomeLength; l++)
+    //     {
+    //         cout<<next_population[i][l];
+    //     }
+    //     cout<<endl;
+    // }
+    
     mutate();
 }
 
@@ -53,28 +64,62 @@ void GeneticAlgorithm<GenomeType, FitnessType>::select()
     // create elite indexes vector
     int count = 0;
     std::vector<int> elite_indexes ;
-    // for (size_t i = 0; i < elite; i++)
-    // {
-    //    // elite_indexes[i]= population_score[i].second;
-    //    // cout<< elite_indexes[i]<<endl;
-    // }
-    // std::vector<std::pair<int, FitnessType>>::iterator it;
+    elite_indexes.reserve(elite);
       for ( auto it = population_score.begin(); it != population_score.end() && count < elite; ++it, ++count) {
-        std::cout << it->first << " -> " << it->second << std::endl;
-        // TODO: send pairs to crossover 
+        //std::cout << it->first << " -> " << it->second << std::endl;
+        elite_indexes[count] =  it->first;
+    }
+    for (size_t i = 0; i < elite; i++)
+    {
+       //cout<<elite_indexes[i]<<endl;
     }
     
+    
 
-    // for (size_t i = 0; i < elite/2; i++)
-    // {
-    //     crossover(population[i],population[elite-i]);
-    // }
+    for (size_t i = 0; i < elite/2; i++)
+    {
+        cout<<elite_indexes[i]<<elite_indexes[elite - 1]<<endl;
+        crossover(population[elite_indexes[i]],population[elite_indexes[elite -1- i]]);
+    }
     
 }
 
 template <typename GenomeType, typename FitnessType>
-void GeneticAlgorithm<GenomeType, FitnessType>::crossover(vector<GenomeType> parent1, vector<GenomeType> parent2)
+void GeneticAlgorithm<GenomeType, FitnessType>::crossover
+(vector<GenomeType> parent1, vector<GenomeType> parent2)
 {
+    vector<GenomeType> child1;
+    vector<GenomeType> child2;
+    child1.reserve(GenomeLength);
+    child2.reserve(GenomeLength);
+    int mid_genome = GenomeLength/2;
+  
+        for (size_t l = 0; l < GenomeLength; l++)
+        {
+            cout<<parent1[l];
+        }
+        cout<<endl;
+        for (size_t l = 0; l < GenomeLength; l++)
+        {
+            cout<<parent2[l];
+        }
+        cout<<endl;
+   
+    for (size_t i = 0; i < GenomeLength; i++)
+    {
+        child1[i]= parent1[i];
+        child1[GenomeLength-1-i] = parent2[GenomeLength-1-i];
+        child2[i]= parent2[i];
+        child2[GenomeLength-1-i] = parent1[GenomeLength-1-i];
+    }
+    cout<<"finished mating"<<endl;
+    next_population[child_count++] = parent1;
+    next_population[child_count++] = parent2;
+    next_population[child_count++] = child1;
+    next_population[child_count++] = child2;
+
+
+
 }
 
 template <typename GenomeType, typename FitnessType>
@@ -128,7 +173,7 @@ void GeneticAlgorithm<GenomeType, FitnessType>::SortPopulationMap(std::vector<st
 
     for (const auto &p : population_score)
     {
-        std::cout << "Genome index: " << p.first << ", Score: " << p.second << std::endl;
+        //std::cout << "Genome index: " << p.first << ", Score: " << p.second << std::endl;
     }
 }
 
