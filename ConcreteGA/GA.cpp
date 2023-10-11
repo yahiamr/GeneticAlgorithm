@@ -11,30 +11,33 @@ GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm
     for (int i = 0; i < popSize; ++i)
     {
         population.push_back(randomGenome());
+        next_population.push_back(randomGenome());
     }
     population_score.reserve(populationSize);
+    //next_population.reserve(populationSize);
 }
 
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration()
 {
-
+    int scr = 0;
     child_count = 0;
-    next_population.reserve(populationSize);
     evaluate();
     select();
     // crossover();
-    
+    cout<<"SIZE "<<next_population.size()<<endl;
     for (size_t i = 0; i < populationSize; i++)
     {
-        for (size_t l = 0; l < GenomeLength; l++)
-        {
-            cout<<population[i][l];
-        }
-        cout<<endl;
-        evaluateFitness(population[i]);
+    //     for (size_t l = 0; l < GenomeLength; l++)
+    //     {
+    //       cout<<next_population[i][l];
+    //     }
+    //    cout<<endl;
+        scr+=evaluateFitness(next_population[i]);
     }
-    cout<<child_count<<endl;
+    //cout<<child_count<<endl;
+     cout<<scr<<endl;
+     population = next_population;
     mutate();
 }
 
@@ -93,18 +96,18 @@ void GeneticAlgorithm<GenomeType, FitnessType>::crossover
 {
     vector<GenomeType> child1;
     vector<GenomeType> child2;
-    child1.reserve(GenomeLength);
-    child2.reserve(GenomeLength);
+    child1.resize(GenomeLength);
+    child2.resize(GenomeLength);
     int mid_genome = GenomeLength/2;
    
-    for (size_t i = 0; i < GenomeLength; i++)
+    for (size_t i = 0; i < mid_genome; i++)
     {
         child1[i]= parent1[i];
         child1[GenomeLength-1-i] = parent2[GenomeLength-1-i];
         child2[i]= parent2[i];
         child2[GenomeLength-1-i] = parent1[GenomeLength-1-i];
     }
-    cout<<"finished mating"<<endl;
+    //cout<<"finished mating"<<endl;
     next_population[child_count++] = parent1;
     next_population[child_count++] = parent2;
     next_population[child_count++] = child1;
@@ -133,7 +136,7 @@ GeneticAlgorithm<GenomeType, FitnessType>::randomGenome()
     std::mt19937 rng(std::random_device{}());
 
     // Create a uniform distribution
-    std::uniform_int_distribution<int> dist(32, 126);
+    std::uniform_int_distribution<int> dist(65, 126);
 
     for (size_t i = 0; i < gnome.size(); i++)
     {
