@@ -15,15 +15,15 @@ int main()
         {
             score += (target[i] == genome[i]);
         }
-       // cout << score << endl;
+       cout << score << endl;
         return score;
     };
 
-    GeneticAlgorithm<Genome, Fitness> ga(9, 16);
+    GeneticAlgorithm<Genome, Fitness> ga(100, 16);
     ga.SetFitFunc(fitnessFunction);
    
     ga.RunGeneration();
 
-    std::cout << "Hello GA" << std::endl;
+    //std::cout << "Hello GA" << std::endl;
     return 0;
 }

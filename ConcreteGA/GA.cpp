@@ -18,20 +18,23 @@ GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration()
 {
+
     child_count = 0;
     next_population.reserve(populationSize);
     evaluate();
     select();
     // crossover();
-    // for (size_t i = 0; i < populationSize; i++)
-    // {
-    //     for (size_t l = 0; l < GenomeLength; l++)
-    //     {
-    //         cout<<next_population[i][l];
-    //     }
-    //     cout<<endl;
-    // }
     
+    for (size_t i = 0; i < populationSize; i++)
+    {
+        for (size_t l = 0; l < GenomeLength; l++)
+        {
+            cout<<population[i][l];
+        }
+        cout<<endl;
+        evaluateFitness(population[i]);
+    }
+    cout<<child_count<<endl;
     mutate();
 }
 
@@ -78,7 +81,7 @@ void GeneticAlgorithm<GenomeType, FitnessType>::select()
 
     for (size_t i = 0; i < elite/2; i++)
     {
-        cout<<elite_indexes[i]<<elite_indexes[elite - 1]<<endl;
+        // cout<<elite_indexes[i]<<elite_indexes[elite - 1]<<endl;
         crossover(population[elite_indexes[i]],population[elite_indexes[elite -1- i]]);
     }
     
@@ -93,17 +96,6 @@ void GeneticAlgorithm<GenomeType, FitnessType>::crossover
     child1.reserve(GenomeLength);
     child2.reserve(GenomeLength);
     int mid_genome = GenomeLength/2;
-  
-        for (size_t l = 0; l < GenomeLength; l++)
-        {
-            cout<<parent1[l];
-        }
-        cout<<endl;
-        for (size_t l = 0; l < GenomeLength; l++)
-        {
-            cout<<parent2[l];
-        }
-        cout<<endl;
    
     for (size_t i = 0; i < GenomeLength; i++)
     {
