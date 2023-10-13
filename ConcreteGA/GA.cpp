@@ -18,6 +18,17 @@ GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm
 }
 
 template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::PrintGenome(vector<GenomeType> genome)
+{
+    for (size_t l = 0; l < GenomeLength; l++)
+        {
+          cout<<genome[l];
+        }
+        cout<<endl;
+}
+
+
+template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration()
 {
     int scr = 0;
@@ -25,32 +36,32 @@ void GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration()
     evaluate();
     select();
     // crossover();
-    cout<<"SIZE "<<next_population.size()<<endl;
-    for (size_t i = 0; i < populationSize; i++)
-    {
-    //     for (size_t l = 0; l < GenomeLength; l++)
-    //     {
-    //       cout<<next_population[i][l];
-    //     }
-    //    cout<<endl;
-        scr+=evaluateFitness(next_population[i]);
-    }
-    //cout<<child_count<<endl;
-     cout<<scr<<endl;
      population = next_population;
     mutate();
+    for (size_t i = 0; i < populationSize; i++)
+    {
+            
+        scr=evaluateFitness(population[i]);
+        //cout<<scr<<endl;
+    }
+    //  cout<<scr<<endl;
 }
 
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::evaluate()
 {
+   // Clear the population_score vector
+    population_score.clear();
+
     FitnessType score = 0;
     for (int i = 0; i < populationSize; ++i)
     {
         score = evaluateFitness(population[i]);
         population_score.push_back(std::make_pair(i, score));
     }
+
     SortPopulationMap(population_score);
+    PrintGenome(population[population_score[0].first]);
 }
 
 template <typename GenomeType, typename FitnessType>
@@ -120,7 +131,36 @@ void GeneticAlgorithm<GenomeType, FitnessType>::crossover
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::mutate()
 {
+    // Set a non-zero mutation rate
+    double staticMutationRate = 0.05; // for a 5% mutation rate
+
+    // Use Mersenne Twister as the random number generator
+    std::mt19937 rng(std::random_device{}());
+    
+    // Create a uniform distribution for choosing the genome mutation position
+    std::uniform_int_distribution<int> position_dist(0, GenomeLength - 1);
+    
+    // Create a uniform distribution for the mutation itself (this range assumes ASCII values)
+    std::uniform_int_distribution<int> mutation_dist(32, 126);
+
+    // Create a uniform distribution for deciding if a genome should mutate
+    std::uniform_real_distribution<double> mutation_chance(0.0, 1.0);
+
+    for(auto& individual : population) {
+        // Check if this genome should mutate
+        if(mutation_chance(rng) < staticMutationRate) {
+            // Choose a random position for mutation
+            int randomValue = position_dist(rng);
+            
+            // Mutate the genome at the chosen position
+            individual[randomValue] = static_cast<GenomeType>(mutation_dist(rng));
+            
+            // Optional print for debugging
+           // cout << "Mutate" << endl;
+        }
+    }
 }
+
 
 // HELPER functions
 
@@ -136,7 +176,7 @@ GeneticAlgorithm<GenomeType, FitnessType>::randomGenome()
     std::mt19937 rng(std::random_device{}());
 
     // Create a uniform distribution
-    std::uniform_int_distribution<int> dist(65, 126);
+    std::uniform_int_distribution<int> dist(32, 126);
 
     for (size_t i = 0; i < gnome.size(); i++)
     {

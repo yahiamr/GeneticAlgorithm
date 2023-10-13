@@ -15,6 +15,8 @@ class GeneticAlgorithm {
         void SetPopulationSize(int popsize);
         void RunGeneration();
         void SetFitFunc(std::function<FitnessType(const std::vector<GenomeType>&)> fitnessFunc);
+        
+void PrintGenome(vector<GenomeType>);
     private:
         //methods
         void evaluate();

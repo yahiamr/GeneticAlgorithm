@@ -9,7 +9,7 @@ int main()
 
     auto fitnessFunction = [](const std::vector<Genome> &genome) -> Fitness
     {
-        std::string target = "Helloo";
+        std::string target = "a7la shosha fel dnya";
         Fitness score = 0;
         for (size_t i = 0; i < genome.size(); i++)
         {
@@ -19,11 +19,12 @@ int main()
         return score;
     };
 
-    GeneticAlgorithm<Genome, Fitness> ga(1000, 6);
+    GeneticAlgorithm<Genome, Fitness> ga(300, 20);
     ga.SetFitFunc(fitnessFunction);
-  for (size_t i = 0; i < 10; i++)
+  for (size_t i = 0; i < 350; i++)
   {
     ga.RunGeneration();
+    cout<<"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<<i<<"================================"<<endl;
   }
    
   
