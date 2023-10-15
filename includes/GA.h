@@ -9,6 +9,7 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 using namespace std;
 
 /**
@@ -21,13 +22,15 @@ template <typename GenomeType, typename FitnessType>
 class GeneticAlgorithm
 {
 public:
-    /** 
+    using InitializationFunctionType = std::function<std::vector<GenomeType>()>;
+
+    /**
      * @brief Constructor for the GeneticAlgorithm class
      * @param popSize Population size
      * @param genomelength Length of each genome
      */
     GeneticAlgorithm(int popSize, int genomelength);
-    
+
     /**
      * @brief Destructor for the GeneticAlgorithm class
      */
@@ -56,11 +59,15 @@ public:
      */
     void SetFitFunc(std::function<FitnessType(const std::vector<GenomeType> &)> fitnessFunc);
 
-    /**
-     * @brief Prints the genome to the console
-     * @param genome The genome to be printed
-     */
-    void PrintGenome(vector<GenomeType>);
+    void SetInitializationFunction(InitializationFunctionType func);
+    void InitializePopulation();
+    std::pair<std::vector<GenomeType>, std::vector<GenomeType>>
+    PMXCrossover(const std::vector<GenomeType> &parent1, const std::vector<GenomeType> &parent2);
+        /**
+         * @brief Prints the genome to the console
+         * @param genome The genome to be printed
+         */
+        void PrintGenome(vector<GenomeType>);
 
 private:
     /**
@@ -97,12 +104,12 @@ private:
      */
     void SortPopulationMap(std::vector<std::pair<int, FitnessType>> score_map);
 
-    std::vector<std::pair<int, FitnessType>> population_score; ///< List of pairs of genome indices and their fitness scores
-    int populationSize; ///< Size of the population
-    int GenomeLength; ///< Length of each genome
-    std::vector<std::vector<GenomeType>> population; ///< Current population of genomes
-    std::vector<std::vector<GenomeType>> next_population; ///< Next generation of genomes
-    int child_count = 0; ///< Counter for the number of children produced in the current generation
+    std::vector<std::pair<int, FitnessType>> population_score;                   ///< List of pairs of genome indices and their fitness scores
+    int populationSize;                                                          ///< Size of the population
+    int GenomeLength;                                                            ///< Length of each genome
+    std::vector<std::vector<GenomeType>> population;                             ///< Current population of genomes
+    std::vector<std::vector<GenomeType>> next_population;                        ///< Next generation of genomes
+    int child_count = 0;                                                         ///< Counter for the number of children produced in the current generation
     std::function<FitnessType(const std::vector<GenomeType> &)> evaluateFitness; ///< Fitness evaluation function
+    InitializationFunctionType initializationFunction;                           // population initialization function
 };
-

@@ -6,12 +6,17 @@ GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm(int popSize, int gen
     : populationSize(popSize), GenomeLength(genomelength)
 {
     // Initialize the population and next population with random genomes
-    for (int i = 0; i < popSize; ++i)
+    population.resize(popSize);
+    next_population.resize(popSize);
+    population_score.resize(popSize); // Reserve space for the population score
+}
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::InitializePopulation()
+{
+    for (int i = 0; i < populationSize; i++)
     {
-        population.push_back(randomGenome());
-        next_population.push_back(randomGenome());
+        population[i] = initializationFunction(); // Use the custom initialization function
     }
-    population_score.reserve(populationSize);  // Reserve space for the population score
 }
 
 // Print the genome content
@@ -30,24 +35,20 @@ template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::RunGeneration()
 {
     int scr = 0;
-    child_count = 0;  // Reset child count
-    evaluate();       // Evaluate the population fitness
-    select();         // Select genomes for reproduction
-    population = next_population;  // Set the current population as the next one
-    mutate();         // Apply mutations
+    child_count = 0;              // Reset child count
+    evaluate();                   // Evaluate the population fitness
+    select();                     // Select genomes for reproduction
+    population = next_population; // Set the current population as the next one
+    mutate();                     // Apply mutations
 
     // Compute fitness for each individual in the population
-    for (size_t i = 0; i < populationSize; i++)
-    {
-        scr = evaluateFitness(population[i]);
-    }
 }
 
 // Evaluate the fitness of the entire population
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::evaluate()
 {
-    population_score.clear();  // Clear the population_score vector
+    population_score.clear(); // Clear the population_score vector
     FitnessType score = 0;
     // Evaluate fitness for each genome and store it with its index
     for (int i = 0; i < populationSize; ++i)
@@ -56,31 +57,93 @@ void GeneticAlgorithm<GenomeType, FitnessType>::evaluate()
         population_score.push_back(std::make_pair(i, score));
     }
 
-    SortPopulationMap(population_score);    // Sort population based on fitness
-    PrintGenome(population[population_score[0].first]);  // Print the best genome
+    SortPopulationMap(population_score);                // Sort population based on fitness
+    PrintGenome(population[population_score[0].first]); // Print the best genome
 }
 
 // Select genomes for reproduction
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::select()
 {
-    int elite = populationSize / 2;  // Select the top 50% genomes
-    if (elite % 2 != 0) elite++;     // Ensure elite count is even
+    int elite = populationSize / 2; // Select the top 50% genomes
+    if (elite % 2 != 0)
+        elite++; // Ensure elite count is even
 
     // Collect indices of elite genomes
     int count = 0;
-    std::vector<int> elite_indexes ;
+    std::vector<int> elite_indexes;
     elite_indexes.reserve(elite);
-    for ( auto it = population_score.begin(); it != population_score.end() && count < elite; ++it, ++count) {
+    for (auto it = population_score.begin(); it != population_score.end() && count < elite; ++it, ++count)
+    {
         elite_indexes[count] = it->first;
     }
 
     // Crossover elite genomes to produce children
     for (size_t i = 0; i < elite / 2; i++)
     {
-        crossover(population[elite_indexes[i]], population[elite_indexes[elite - 1 - i]]);
+       // crossover(population[elite_indexes[i]], population[elite_indexes[elite - 1 - i]]);
+        PMXCrossover(population[elite_indexes[i]], population[elite_indexes[elite - 1 - i]]);
     }
 }
+
+template <typename GenomeType, typename FitnessType>
+std::pair<std::vector<GenomeType>, std::vector<GenomeType>>
+ GeneticAlgorithm<GenomeType, FitnessType>::PMXCrossover(const std::vector<GenomeType>& parent1, const std::vector<GenomeType>& parent2)
+{
+    size_t genomeSize = parent1.size();
+
+    // Randomly select two crossover points
+    size_t cp1 = rand() % genomeSize;
+    size_t cp2 = rand() % genomeSize;
+
+    // Ensure cp1 is less than cp2
+    if (cp1 > cp2) std::swap(cp1, cp2);
+
+    std::vector<GenomeType> offspring1 = parent1;
+    std::vector<GenomeType> offspring2 = parent2;
+
+    // Swap genes between crossover points
+    for (size_t i = cp1; i <= cp2; ++i)
+    {
+        std::swap(offspring1[i], offspring2[i]);
+    }
+
+    // Create mapping from swapped genes
+    std::unordered_map<GenomeType, GenomeType> mapping1, mapping2;
+    for (size_t i = cp1; i <= cp2; ++i)
+    {
+        mapping1[offspring1[i]] = offspring2[i];
+        mapping2[offspring2[i]] = offspring1[i];
+    }
+
+    // Resolve conflicts outside of crossover points
+    auto resolveConflict = [](std::vector<GenomeType>& offspring, const std::unordered_map<GenomeType, GenomeType>& mapping, size_t cp1, size_t cp2)
+    {
+        for (size_t i = 0; i < offspring.size(); ++i)
+        {
+            if (i < cp1 || i > cp2)
+            {
+                while (mapping.count(offspring[i]))
+                {
+                    offspring[i] = mapping.at(offspring[i]);
+                }
+            }
+        }
+    };
+
+    resolveConflict(offspring1, mapping1, cp1, cp2);
+    resolveConflict(offspring2, mapping2, cp1, cp2);
+    
+    next_population[child_count++] = parent1;
+    next_population[child_count++] = parent2;
+    next_population[child_count++] = offspring1;
+    next_population[child_count++] = offspring2;
+    
+    return {offspring1, offspring2};
+    
+}
+
+
 
 // Crossover two parent genomes to produce two children
 template <typename GenomeType, typename FitnessType>
@@ -110,21 +173,23 @@ void GeneticAlgorithm<GenomeType, FitnessType>::crossover(vector<GenomeType> par
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::mutate()
 {
-    double staticMutationRate = 0.07;  // 5% mutation rate
+    double staticMutationRate = 0.05; // 5% mutation rate
 
     // Random number generators
     std::mt19937 rng(std::random_device{}());
     std::uniform_int_distribution<int> position_dist(0, GenomeLength - 1);
-    std::uniform_int_distribution<int> mutation_dist(32, 126);
+    std::uniform_int_distribution<int> mutation_dist(0, 5);
     std::uniform_real_distribution<double> mutation_chance(0.0, 1.0);
 
     // Apply mutation based on mutation rate
-    for(auto& individual : population)
+    for (auto &individual : population)
     {
-        if(mutation_chance(rng) < staticMutationRate)
+        if (mutation_chance(rng) < staticMutationRate)
         {
-            int randomValue = position_dist(rng);
-            individual[randomValue] = static_cast<GenomeType>(mutation_dist(rng));
+            std::uniform_int_distribution<int> position_dist(0, GenomeLength - 1);
+            int pos1 = position_dist(rng);
+            int pos2 = position_dist(rng);
+            std::swap(individual[pos1], individual[pos2]);
         }
     }
 }
@@ -135,7 +200,7 @@ std::vector<GenomeType> GeneticAlgorithm<GenomeType, FitnessType>::randomGenome(
 {
     std::vector<GenomeType> gnome(GenomeLength);
     std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> dist(32, 126);
+    std::uniform_int_distribution<int> dist(0, 5);
 
     // Fill genome with random values
     for (size_t i = 0; i < gnome.size(); i++)
@@ -152,6 +217,12 @@ void GeneticAlgorithm<GenomeType, FitnessType>::SetFitFunc(std::function<Fitness
     evaluateFitness = fitnessFunc;
 }
 
+template <typename GenomeType, typename FitnessType>
+void GeneticAlgorithm<GenomeType, FitnessType>::SetInitializationFunction(InitializationFunctionType func)
+{
+    initializationFunction = func;
+}
+
 // Sort the population based on their fitness
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::SortPopulationMap(std::vector<std::pair<int, FitnessType>> score_map)
@@ -166,3 +237,4 @@ void GeneticAlgorithm<GenomeType, FitnessType>::SortPopulationMap(std::vector<st
 // Explicit template instantiations
 template class GeneticAlgorithm<char, double>;
 template class GeneticAlgorithm<char, int>;
+template class GeneticAlgorithm<int, double>;
