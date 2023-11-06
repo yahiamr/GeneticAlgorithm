@@ -26,7 +26,7 @@ public:
      * @param popSize Population size
      * @param genomelength Length of each genome
      */
-    GeneticAlgorithm(int popSize, int genomelength);
+    GeneticAlgorithm(int popSize, int genomelength, double mutationrate);
     
     /**
      * @brief Destructor for the GeneticAlgorithm class
@@ -100,6 +100,7 @@ private:
     std::vector<std::pair<int, FitnessType>> population_score; ///< List of pairs of genome indices and their fitness scores
     int populationSize; ///< Size of the population
     int GenomeLength; ///< Length of each genome
+    double MutationRate; ///< Mutation rate
     std::vector<std::vector<GenomeType>> population; ///< Current population of genomes
     std::vector<std::vector<GenomeType>> next_population; ///< Next generation of genomes
     int child_count = 0; ///< Counter for the number of children produced in the current generation

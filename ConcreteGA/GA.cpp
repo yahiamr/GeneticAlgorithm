@@ -2,8 +2,8 @@
 
 // Constructor: Initializes the population and the next generation with random genomes
 template <typename GenomeType, typename FitnessType>
-GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm(int popSize, int genomelength)
-    : populationSize(popSize), GenomeLength(genomelength)
+GeneticAlgorithm<GenomeType, FitnessType>::GeneticAlgorithm(int popSize, int genomelength,double mutationrate)
+    : populationSize(popSize), GenomeLength(genomelength),MutationRate(mutationrate)
 {
     // Initialize the population and next population with random genomes
     for (int i = 0; i < popSize; ++i)
@@ -110,7 +110,7 @@ void GeneticAlgorithm<GenomeType, FitnessType>::crossover(vector<GenomeType> par
 template <typename GenomeType, typename FitnessType>
 void GeneticAlgorithm<GenomeType, FitnessType>::mutate()
 {
-    double staticMutationRate = 0.07;  // 5% mutation rate
+    double staticMutationRate = MutationRate;
 
     // Random number generators
     std::mt19937 rng(std::random_device{}());

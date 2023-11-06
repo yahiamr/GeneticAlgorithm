@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.2)
 
 set(CMAKE_CXX_STANDARD 17)
 
 project(GeneticAlgorithm)
 
-add_executable(GA_APP main.cpp)
+add_executable(GA_APP main.cpp helpers.cpp)
 
 #TODO add subdirs and include dirs
 include_directories(${CMAKE_SOURCE_DIR}/includes)

@@ -1,0 +1,4 @@
+# This is a configuration file
+populationSize=2000
+mutationRate=0.1
+target=To be or not to be that's not the question HAMLET SAID
